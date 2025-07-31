@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GPTSwarm Optimization Animation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .animation-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        .step-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+    </style>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 GPTSwarm Optimization Animation</h1>
+            <p>Watch how the swarm optimizes its performance over time</p>
+        </div>
+        
+        <div class="animation-container">
+            <div id="graph-canvas" style="height: 400px;"></div>
+        </div>
+        
+        <div class="step-info">
+            <span>Step: <span id="current-step">0</span> / <span id="total-steps">0</span></span>
+            <span>Performance: <span id="current-performance">0%</span></span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startAnimation()">Start</button>
+            <button class="btn" onclick="pauseAnimation()">Pause</button>
+            <button class="btn" onclick="resetAnimation()">Reset</button>
+            <button class="btn" onclick="stepForward()">Step Forward</button>
+        </div>
+    </div>
+
+    <script>
+        const optimizationSteps = [{"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 15}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 15}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 15}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(120, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(120, 70%, 50%)"}], "performance": 0.5}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 16}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 16}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 16}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(130, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(130, 70%, 50%)"}], "performance": 0.54}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 17}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 17}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 17}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(140, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(140, 70%, 50%)"}], "performance": 0.58}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 18}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 18}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 18}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(150, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(150, 70%, 50%)"}], "performance": 0.62}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 19}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 19}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 19}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(160, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(160, 70%, 50%)"}], "performance": 0.66}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 20}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 20}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 20}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(170, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(170, 70%, 50%)"}], "performance": 0.7}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 21}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 21}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 21}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(180, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(180, 70%, 50%)"}], "performance": 0.74}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 22}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 22}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 22}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(190, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(190, 70%, 50%)"}], "performance": 0.78}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 23}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 23}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 23}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(200, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(200, 70%, 50%)"}], "performance": 0.8200000000000001}, {"nodes": [{"id": 0, "label": "Agent_0", "color": "#FF6B6B", "size": 24}, {"id": 1, "label": "Agent_1", "color": "#FF6B6B", "size": 24}, {"id": 2, "label": "Agent_2", "color": "#FF6B6B", "size": 24}], "edges": [{"id": 0, "from": 0, "to": 1, "color": "hsl(210, 70%, 50%)"}, {"id": 1, "from": 1, "to": 2, "color": "hsl(210, 70%, 50%)"}], "performance": 0.86}];
+        let currentStep = 0;
+        let animationRunning = false;
+        let animationTimer = null;
+        
+        // Initialize graph
+        const container = document.getElementById('graph-canvas');
+        let network = null;
+        
+        function initializeGraph() {
+            const initialStep = optimizationSteps[0] || {
+                nodes: [{id: 0, label: 'Agent_0', color: '#FF6B6B'}],
+                edges: [],
+                performance: 0.5
+            };
+            
+            const nodes = new vis.DataSet(initialStep.nodes);
+            const edges = new vis.DataSet(initialStep.edges);
+            
+            const options = {
+                nodes: {
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    font: { color: '#333333', size: 12 },
+                    shadow: true
+                },
+                edges: {
+                    width: 3,
+                    shadow: true,
+                    smooth: { type: 'continuous' }
+                },
+                physics: {
+                    enabled: true,
+                    stabilization: { iterations: 100 }
+                }
+            };
+            
+            network = new vis.Network(container, { nodes, edges }, options);
+            updateStepInfo();
+        }
+        
+        function updateGraph() {
+            if (currentStep >= optimizationSteps.length) return;
+            
+            const step = optimizationSteps[currentStep];
+            const nodes = new vis.DataSet(step.nodes);
+            const edges = new vis.DataSet(step.edges);
+            
+            network.setData({ nodes, edges });
+            updateStepInfo();
+        }
+        
+        function updateStepInfo() {
+            document.getElementById('current-step').textContent = currentStep;
+            document.getElementById('total-steps').textContent = optimizationSteps.length - 1;
+            
+            if (currentStep < optimizationSteps.length) {
+                const performance = optimizationSteps[currentStep].performance;
+                document.getElementById('current-performance').textContent = 
+                    (performance * 100).toFixed(1) + '%';
+                
+                const progress = (currentStep / (optimizationSteps.length - 1)) * 100;
+                document.getElementById('progress-fill').style.width = progress + '%';
+            }
+        }
+        
+        function startAnimation() {
+            if (animationRunning) return;
+            
+            animationRunning = true;
+            animationTimer = setInterval(() => {
+                stepForward();
+                if (currentStep >= optimizationSteps.length - 1) {
+                    pauseAnimation();
+                }
+            }, 1000);
+        }
+        
+        function pauseAnimation() {
+            animationRunning = false;
+            if (animationTimer) {
+                clearInterval(animationTimer);
+                animationTimer = null;
+            }
+        }
+        
+        function resetAnimation() {
+            pauseAnimation();
+            currentStep = 0;
+            updateGraph();
+        }
+        
+        function stepForward() {
+            if (currentStep < optimizationSteps.length - 1) {
+                currentStep++;
+                updateGraph();
+            }
+        }
+        
+        // Initialize
+        if (optimizationSteps.length > 0) {
+            initializeGraph();
+        }
+    </script>
+</body>
+</html>
