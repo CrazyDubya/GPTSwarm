@@ -93,7 +93,7 @@ class ResearchTask:
         """Estimate required number of agents"""
         base_count = {"low": 2, "medium": 3, "high": 4}
         skill_bonus = len(skills) // 2
-        return min(base_count.get(complexity, 3) + skill_bonus, 6)
+        return min(base_count.get(complexity, 3) + skill_bonus, MAX_AGENT_COUNT)
 
 class AgentTeam:
     """Represents a dynamically formed team of agents"""
