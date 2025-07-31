@@ -17,11 +17,15 @@ from datetime import datetime
 class CreativeAgent:
     """Represents a creative agent with specific creative capabilities"""
     
+    # Constants for creativity score range
+    CREATIVITY_SCORE_MIN = 0.7
+    CREATIVITY_SCORE_MAX = 1.0
+    
     def __init__(self, agent_type: str, specialization: str):
         self.agent_type = agent_type
         self.specialization = specialization
         self.contribution_history = []
-        self.creativity_score = random.uniform(0.7, 1.0)
+        self.creativity_score = random.uniform(self.CREATIVITY_SCORE_MIN, self.CREATIVITY_SCORE_MAX)
         
     def generate_contribution(self, 
                             context: Dict[str, Any], 
