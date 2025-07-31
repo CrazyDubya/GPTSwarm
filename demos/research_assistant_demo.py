@@ -79,14 +79,15 @@ class ResearchTask:
             "agent_count": self._estimate_agent_count(complexity, skills)
         }
     
+    TIME_ESTIMATES = {
+        "low": 60,     # 1 minute
+        "medium": 180,  # 3 minutes
+        "high": 600    # 10 minutes
+    }
+
     def _estimate_time(self, complexity: str) -> int:
         """Estimate task completion time"""
-        time_estimates = {
-            "low": 60,     # 1 minute
-            "medium": 180,  # 3 minutes
-            "high": 600    # 10 minutes
-        }
-        return time_estimates.get(complexity, 180)
+        return self.TIME_ESTIMATES.get(complexity, 180)
     
     def _estimate_agent_count(self, complexity: str, skills: List[str]) -> int:
         """Estimate required number of agents"""
