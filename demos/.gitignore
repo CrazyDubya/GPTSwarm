@@ -1,0 +1,29 @@
+# Demo-specific gitignore
+# Add this to .gitignore or create demos/.gitignore
+
+# Generated visualization files
+demos/visualizations/*.html
+demos/visualizations/*.json
+demos/visualizations/*.png
+demos/visualizations/*.gif
+
+# Demo output files
+demos/outputs/
+demos/logs/
+demos/temp/
+
+# Python cache
+demos/__pycache__/
+demos/**/__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+demos/tmp/
+demos/.tmp/
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
